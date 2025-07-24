@@ -12,30 +12,30 @@
 
 #include "philo.h"
 
-static int init_mutexes(t_program *prog)
+static int	init_mutexes(t_program *prog)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	prog->forks = malloc(sizeof(pthread_mutex_t) * prog->num_philos);
 	if (!prog->forks)
-		return 1;
+		return (1);
 	while (i < prog->num_philos)
 	{
 		if (pthread_mutex_init(&prog->forks[i], NULL) != 0)
-			return 1;
+			return (1);
 		i++;
 	}
 	if (pthread_mutex_init(&prog->write_lock, NULL) != 0)
-		return 1;
+		return (1);
 	if (pthread_mutex_init(&prog->stop_lock, NULL) != 0)
-		return 1;
-	return 0;
+		return (1);
+	return (0);
 }
 
-static void init_philos(t_program *prog)
+static void	init_philos(t_program *prog)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (i < prog->num_philos)
@@ -53,7 +53,7 @@ static void init_philos(t_program *prog)
 	}
 }
 
-static int parse_args(t_program *prog, int argc, char **argv)
+static int	parse_args(t_program *prog, int argc, char **argv)
 {
 	prog->num_philos = ft_atoi(argv[1]);
 	prog->time_to_die = ft_atoi(argv[2]);
@@ -61,31 +61,31 @@ static int parse_args(t_program *prog, int argc, char **argv)
 	prog->time_to_sleep = ft_atoi(argv[4]);
 	if (prog->num_philos <= 0 || prog->time_to_die <= 0
 		|| prog->time_to_eat <= 0 || prog->time_to_sleep <= 0)
-		return 1;
+		return (1);
 	if (argc == 6)
 	{
 		prog->num_must_eat = ft_atoi(argv[5]);
 		if (prog->num_must_eat <= 0)
-			return 1;
+			return (1);
 	}
 	else
 		prog->num_must_eat = -1;
-	return 0;
+	return (0);
 }
 
-int init_program(t_program *prog, int argc, char **argv)
+int	init_program(t_program *prog, int argc, char **argv)
 {
 	if (parse_args(prog, argc, argv) != 0)
-		return 1;
+		return (1);
 	prog->philos = malloc(sizeof(t_philo) * prog->num_philos);
 	if (!prog->philos)
-		return 1;
+		return (1);
 	if (init_mutexes(prog) != 0)
 	{
 		free(prog->philos);
-		return 1;
+		return (1);
 	}
 	init_philos(prog);
 	prog->stop_simulation = 0;
-	return 0;
+	return (0);
 }
