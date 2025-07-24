@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 17:13:22 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/23 17:31:03 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/24 13:44:11 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,10 @@ static void	destroy_all(t_program *prog)
 	free(prog->forks);
 }
 
+// 1. set the "Zero Hour"
+// 2. Launch all Philosopher threads (pthread_create)
+// 3. launch the Monitor thread
+// 4. wait for the simulation to end (pthread_join)
 static int	start_simulation(t_program *prog)
 {
 	int			i;
@@ -46,6 +50,7 @@ static int	start_simulation(t_program *prog)
 	}
 	if (pthread_create(&monitor, NULL, &monitor_routine, prog) != 0)
 		return (1);
+	i = 0;
 	while (i < prog->num_philos)
 	{
 		pthread_join(prog->philos[i].thread, NULL);
@@ -64,7 +69,7 @@ int	main(int argc, char **argv)
 		printf("Usage: %s n_philos t_die t_eat t_sleep [n_meals]\n", argv[0]);
 		return (1);
 	}
-	if (start_simulations(&prog) != 0)
+	if (init_program(&prog, argc, argv) != 0)
 	{
 		printf("Error: invalid arguments or initialization failed\n");
 		return (1);
