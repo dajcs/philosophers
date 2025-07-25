@@ -56,14 +56,3 @@ The specific rules for the mandatory part are:
 ## Constraints
 
 - allowed external functions: `memset`, `printf`, `malloc`, `free`, `write`, `usleep`, `gettimeofday`, `pthread_create`, `pthread_detach`, `pthread_join`, `pthread_mutex_init`, `pthread_mutex_destroy`, `pthread_mutex_lock`, `pthread_mutex_unlock`
-- the **Norminette rules** should be adhered:
-  - only while loops are allowed
-  - ternary operators are not allowed
-  - variable definition and variable assignment in separate rows
-  - one empty line after variable definitions, no other empty lines
-  - only one variable definition/assignment or instruction on a single line
-  - max 80 characters / line
-  - max 4 parameters / function
-  - max 5 variables / function
-  - max 25 lines / function
-  - max 5 functions / .c file

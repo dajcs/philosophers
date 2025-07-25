@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 13:53:27 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/24 14:09:23 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/25 16:30:06 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,8 +18,8 @@ static void	philo_eat(t_philo *philo)
 	print_status(philo, "has taken a fork");
 	if (philo->prog->num_philos == 1)
 	{
-		precise_sleep(philo->prog->time_to_die, philo->prog);
 		pthread_mutex_unlock(philo->left_fork);
+		precise_sleep(philo->prog->time_to_die * 2, philo->prog);
 		return ;
 	}
 	pthread_mutex_lock(philo->right_fork);
@@ -46,11 +46,11 @@ void	*philosopher_routine(void *arg)
 		philo_eat(philo);
 		if (check_stop_flag(philo->prog))
 			break ;
-		print_status(philo, "is_sleeping");
+		print_status(philo, "is sleeping");
 		precise_sleep(philo->prog->time_to_sleep, philo->prog);
 		if (check_stop_flag(philo->prog))
 			break ;
-		print_status(philo, "is_thinking");
+		print_status(philo, "is thinking");
 	}
 	return (NULL);
 }

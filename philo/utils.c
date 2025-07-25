@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 14:32:33 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/25 14:45:22 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/25 16:24:17 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	print_status(t_philo *philo, char *status)
 	long long	time;
 
 	pthread_mutex_lock(&philo->prog->write_lock);
-	if (!check_stop_flag(philo->prog))
+	if (!check_stop_flag(philo->prog) || strcmp(status, "died") == 0)
 	{
 		time = get_time() - philo->prog->start_time;
 		printf("%lld %d %s\n", time, philo->id, status);
