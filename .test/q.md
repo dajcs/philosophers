@@ -46,6 +46,8 @@
 - files: Makefile, *.h, *.c in directory `philo`
 - Makefile: NAME, all, clean, fclean, re
 - Arguments: number_of_philosophers time_to_die time_to_eat time_to_sleep \[number_of_times_each_philosopher_must_eat\]
+- allowed external functions: `memset`, `printf`, `malloc`, `free`, `write`, `usleep`, `gettimeofday`, `pthread_create`, `pthread_detach`, `pthread_join`, `pthread_mutex_init`, `pthread_mutex_destroy`, `pthread_mutex_lock`, `pthread_mutex_unlock`
+
 - Description: Philosophers with threads and mutexes
 
 The specific rules for the mandatory part are:
@@ -53,6 +55,19 @@ The specific rules for the mandatory part are:
 - There is one fork between each pair of philosophers. Therefore, if there are several philosophers, each philosopher has a fork in their left side and a fork on their right side. If there is only one philosopher, they will have access to just one fork.
 - To prevent philosophers from duplicating forks, it should be protected each fork's state with mutex.
 
-## Constraints
+## Bonus part
 
-- allowed external functions: `memset`, `printf`, `malloc`, `free`, `write`, `usleep`, `gettimeofday`, `pthread_create`, `pthread_detach`, `pthread_join`, `pthread_mutex_init`, `pthread_mutex_destroy`, `pthread_mutex_lock`, `pthread_mutex_unlock`
+- program name: `philo_bonus`
+- files: Makefile, *.h, *.c in directory `philo_bonus`
+- Makefile: NAME, all, clean, fclean, re
+- Arguments: number_of_philosophers time_to_die time_to_eat time_to_sleep \[number_of_times_each_philosopher_must_eat\]
+- allowed external functions: `memset`, `printf`, `malloc`, `free`, `write`, `fork`, `kill`, `exit`, `pthread_create`, `pthread_detach`, `pthread_join`, `usleep`, `gettimeofday`, `waitpid`, `sem_open`, `sem_close`, `sem_post`, `sem_wait`, `sem_unlink`
+
+- Description: Philosophers with processes and semaphores
+
+The program of the bonus part takes the same arguments as the mandatory program.
+
+The specific rules for the bonus part are:
+- All the forks are put in the middle of the table
+- They have no states in memory, but the number of available forks is represented by a semaphore
+- each philosopher must be represented as a separete process. The main process should not act as a philosopher.
