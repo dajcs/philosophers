@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 13:53:01 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/27 08:00:58 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/27 13:12:37 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,9 +29,7 @@ static int	check_if_all_ate(t_program *prog)
 	}
 	if (full_philos == prog->num_philos)
 	{
-		pthread_mutex_lock(&prog->stop_lock);
 		prog->stop_simulation = 1;
-		pthread_mutex_unlock(&prog->stop_lock);
 		return (1);
 	}
 	return (0);
@@ -44,9 +42,7 @@ static int	check_if_dead(t_philo *philo)
 	time = get_time();
 	if ((time - philo->last_meal_time) > philo->prog->time_to_die)
 	{
-		pthread_mutex_lock(&philo->prog->stop_lock);
 		philo->prog->stop_simulation = 1;
-		pthread_mutex_unlock(&philo->prog->stop_lock);
 		print_status(philo, "died");
 		return (1);
 	}
@@ -70,7 +66,7 @@ void	*monitor_routine(void *arg)
 		}
 		if (check_if_all_ate(prog))
 			return (NULL);
-		usleep(200);
+		usleep(1000);
 	}
 	return (NULL);
 }

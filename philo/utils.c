@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 14:32:33 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/27 08:02:08 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/27 13:12:58 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,16 +57,6 @@ void	precise_sleep(long long ms, t_program *prog)
 	{
 		if (get_time() - start >= ms)
 			break ;
-		usleep(20);
+		usleep(200);
 	}
-}
-
-int	check_stop_flag(t_program *prog)
-{
-	int	ret;
-
-	pthread_mutex_lock(&prog->stop_lock);
-	ret = prog->stop_simulation;
-	pthread_mutex_unlock(&prog->stop_lock);
-	return (ret);
 }

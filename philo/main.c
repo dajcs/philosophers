@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 17:13:22 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/26 17:19:17 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/27 13:12:07 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,9 @@ static void	destroy_all(t_program *prog)
 	while (i < prog->num_philos)
 	{
 		pthread_mutex_destroy(&prog->forks[i]);
-		pthread_mutex_destroy(&prog->philos[i].meal_lock);
 		i++;
 	}
 	pthread_mutex_destroy(&prog->write_lock);
-	pthread_mutex_destroy(&prog->stop_lock);
 	free(prog->philos);
 	free(prog->forks);
 }

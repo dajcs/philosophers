@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 16:42:27 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/23 17:12:15 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/27 09:33:48 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,6 @@ typedef struct s_philo
 	pthread_t			thread; // the id for this philo's thread
 	pthread_mutex_t		*left_fork; // pointer to the fork on the left
 	pthread_mutex_t		*right_fork; // pointer to the fork on the right
-	pthread_mutex_t		meal_lock; // a lock to protect his status
 	struct s_program	*prog; // a pointer back to the shared dashboard
 }						t_philo;
 
@@ -52,7 +51,6 @@ typedef struct s_program
 	int					stop_simulation; // a flag to tell all threads to stop
 	// --- Shared Tools (Mutexes) ---
 	pthread_mutex_t		write_lock; // lock for printing to the console
-	pthread_mutex_t		stop_lock; // lock to protect the stop_simulation flag
 	// --- Pointers to Dynamic Data ---
 	t_philo				*philos; // an array of all philosophers
 	pthread_mutex_t		*forks; // an array of mutexes representing all forks
@@ -72,6 +70,5 @@ long long				get_time(void);
 int						ft_atoi(const char *str);
 void					print_status(t_philo *philo, char *status);
 void					precise_sleep(long long ms, t_program *prog);
-int						check_stop_flag(t_program *prog);
 
 #endif
