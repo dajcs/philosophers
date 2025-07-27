@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   utils_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/07/25 14:32:33 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/27 13:12:58 by anemet           ###   ########.fr       */
+/*   Created: 2025/07/27 18:12:54 by anemet            #+#    #+#             */
+/*   Updated: 2025/07/27 18:20:07 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "philo.h"
+#include "philo_bonus.h"
 
 long long	get_time(void)
 {
@@ -32,28 +32,27 @@ int	ft_atoi(const char *str)
 		res = res * 10 + (str[i] - '0');
 		i++;
 	}
-	return (res);
+	return ((int)res);
 }
 
-void	print_status(t_philo *philo, char *status)
+/* All output goes through SEM_PRINT so lines never interleave */
+void	print_status(t_prog *p, int id, char *status)
 {
-	long long	time;
+	long long	t;
 
-	pthread_mutex_lock(&philo->prog->write_lock);
-	if (!philo->prog->stop_simulation || strcmp(status, "died") == 0)
-	{
-		time = get_time() - philo->prog->start_time;
-		printf("%lld %d %s\n", time, philo->id, status);
-	}
-	pthread_mutex_unlock(&philo->prog->write_lock);
+	sem_wait(p->print);
+	t = get_time() - p->start_time;
+	printf("%lld %d %s\n", t, id, status);
+	sem_post(p->print);
 }
 
-void	precise_sleep(long long ms, t_program *prog)
+/* Sleep with sub-ms polling granularity to keep the deat timing tight */
+void	precise_sleep(long long ms)
 {
 	long long	start;
 
 	start = get_time();
-	while (!prog->stop_simulation)
+	while (1)
 	{
 		if (get_time() - start >= ms)
 			break ;
