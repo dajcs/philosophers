@@ -6,12 +6,16 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 12:15:20 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/24 12:58:32 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/27 13:11:38 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+// dynamic malloc for forks mutexes
+// initiate prog->forks[i] mutexes (protect forks while eating)
+// initiate prog->write_lock mutex (protect terminal writing by philos/monitor)
+// initiate prog->stop_lock mutex (protect end-of-game)
 static int	init_mutexes(t_program *prog)
 {
 	int	i;
@@ -28,8 +32,6 @@ static int	init_mutexes(t_program *prog)
 	}
 	if (pthread_mutex_init(&prog->write_lock, NULL) != 0)
 		return (1);
-	if (pthread_mutex_init(&prog->stop_lock, NULL) != 0)
-		return (1);
 	return (0);
 }
 
@@ -43,7 +45,6 @@ static void	init_philos(t_program *prog)
 		prog->philos[i].id = i + 1;
 		prog->philos[i].eat_count = 0;
 		prog->philos[i].prog = prog;
-		pthread_mutex_init(&prog->philos[i].meal_lock, NULL);
 		prog->philos[i].left_fork = &prog->forks[i];
 		if (i == 0)
 			prog->philos[i].right_fork = &prog->forks[prog->num_philos - 1];
