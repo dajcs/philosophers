@@ -6,13 +6,13 @@
 #    By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/25 14:47:58 by anemet            #+#    #+#              #
-#    Updated: 2025/07/25 14:56:57 by anemet           ###   ########.fr        #
+#    Updated: 2025/07/27 08:12:09 by anemet           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -pthread -g
+CFLAGS = -Wall -Wextra -Werror -pthread -O2
 
 SRCS = main.c \
 		init.c \

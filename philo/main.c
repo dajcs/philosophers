@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 17:13:22 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/24 13:44:11 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/26 17:19:17 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,39 @@ static void	destroy_all(t_program *prog)
 
 // 1. set the "Zero Hour"
 // 2. Launch all Philosopher threads (pthread_create)
-// 3. launch the Monitor thread
+//      before launch set `last_meal_time` to prevent instant death by hunger
+/* ** pthread_create() arguments:
+    *   `&prog->philos[i].thread`: Store the ID of the thread at the given
+	                               pointer variable (of type pthread_t)
+    *   `NULL`: thread attributes, `NULL` -> Default thread attributes.
+    *   `&philosopher_routine`: pointer to the function the new thread should
+	*                           start running.
+	                            this function is of type `void *(*)(void *)`
+                       meaning: takes 1 arg - a generic pointer to variable
+                       and returns result in the form of a generic pointer ->
+                                          retrieved later with `pthread_join()`
+    *   `&prog->philos[i]`: start `philosopher_routine()` with this argument
+                                     (a pointer to the philosopher's profile)
+         so the `philosopher_routine()` has access to the struct type `t_philo`
+   ** The Result:** From the moment `pthread_create()` is called, the
+      `philosopher_routine` function begins running **concurrently** with the
+	  `start_simulation` function. The `main` thread continues its loop to
+	  launch the next philosopher, while the first philosopher is already
+	  starting their eat/sleep/think cycle.
+*/
+// 3. launch the Monitor thread with arguments:
+/*    - &monitor: ptr to variable monitor to store thread id (type pthread_t)
+      - NULL    : default thread attributes
+	  - &monitor_routine: ptr to the function to be run in this thread
+	  - prog    : ptr to the "Shared Dashboard" struct (type: t_program)
+*/
+/*  after this step we have:
+	..- `number_of_philosophers` * `philosopher_routine()` thread
+	  - and                    1 * `monitor_routine()` thread
+	running inside the parent thread (`start_simulation()`)
+	*/
 // 4. wait for the simulation to end (pthread_join)
+//         (when a philo dies or when all have eaten `num_must_eat` times)
 static int	start_simulation(t_program *prog)
 {
 	int			i;

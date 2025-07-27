@@ -6,12 +6,16 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 12:15:20 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/24 12:58:32 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/26 19:05:56 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+// dynamic malloc for forks mutexes
+// initiate prog->forks[i] mutexes (protect forks while eating)
+// initiate prog->write_lock mutex (protect terminal writing by philos/monitor)
+// initiate prog->stop_lock mutex (protect end-of-game)
 static int	init_mutexes(t_program *prog)
 {
 	int	i;
