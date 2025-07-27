@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 15:45:42 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/27 16:29:41 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/28 00:27:52 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,14 +39,28 @@ static void	wait_for_any_and_cleanup(t_prog *p)
 	int		i;
 	int		status;
 	pid_t	pid;
+	int		died;
 
 	i = 0;
+	died = 0;
 	while (i < p->n)
 	{
 		pid = waitpid(-1, &status, 0);
 		if (pid > 0 && WIFEXITED(status) && WEXITSTATUS(status) == 1)
+		{
 			kill_all(p);
+			died = 1;
+		}
 		i++;
+	}
+	if (p->must_eat != -1 && died == 1)
+	{
+		i = 0;
+		while (i < p->n)
+		{
+			sem_post(p->meals);
+			i++;
+		}
 	}
 	close_unlink_sems();
 	free(p->pids);
@@ -92,6 +106,28 @@ int	spawn_all(t_prog *p)
 	return (0);
 }
 
+/* *******************    Function Call Map   ******************************
+main
+ ├─ parse_args
+ ├─ open_sems
+ ├─ spawn_all
+ │    └─ fork -> child: philo_process
+ │                     ├─ pthread_create (watchdog)
+ │                     ├─ eat_block
+ │                     │    ├─ take_two_forks
+ │                     │    └─ put_two_forks
+ │                     ├─ (if quota) sem_post(SEM_MEALS) + exit(0)
+ │                     └─ (loop)
+ ├─ (if quota) pthread_create (meals_collector)
+ │             └─ meals_collector
+ │                 ├─ loop N×: sem_wait(SEM_MEALS)
+ │                 └─ kill_all
+ └─ wait_for_any_and_cleanup
+      ├─ loop N×: waitpid(-1)
+      ├─ (if any exit(1)) kill_all
+      ├─ (if quota && died) post N× to SEM_MEALS 
+      └─ close_unlink_sems + free
+*/
 int	main(int argc, char **argv)
 {
 	t_prog		p;

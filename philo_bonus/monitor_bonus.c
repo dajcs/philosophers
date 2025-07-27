@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 18:06:24 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/27 18:11:37 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/28 00:41:28 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 /* Per-child watchdog thread
    Each child keeps a local last_meal timestamp updated at the moment it starts
-   eating. The watchdog polls and exits the *process* with code 1 on death.
-   Parent detects the exit(1) and kills the rest.                            */
+   eating. The watchdog polls and exits the philo *process* with code 1 when
+   philo is starved to death. Parent detects the exit(1) and kills the rest. */
 void	*watchdog(void *arg)
 {
 	t_philo	*ph;
