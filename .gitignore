@@ -1,3 +1,11 @@
 philo/philo
 philo_bonus/philo
 philo_bonus/philo_bonus
+philo/removetests.sh
+philo/*.o
+philo_bonus/removetests.sh
+philo_bonus/*.o
+philo/42-*
+philo_bonus/42-*
+philo/Tester*
+philo_bonus/Tester*

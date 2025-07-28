@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 14:26:29 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/27 15:24:13 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/28 14:42:46 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,5 +95,6 @@ long long		get_time(void);
 int				ft_atoi(const char *str);
 void			precise_sleep(long long ms);
 void			print_status(t_prog *p, int id, char *status);
+void			print_death(t_prog *p, int id);
 
 #endif

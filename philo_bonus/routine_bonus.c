@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 17:48:15 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/27 18:04:47 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/28 16:43:23 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,12 @@ static int	check_meals_and_exit(t_philo *ph)
 	return (0);
 }
 
+// the main philo process
+// set ph struct initial values
+// create watchdog detecting starvation to death
+// every second philo should wait +5 ms to let the others grab 2 forks and eat
+// when nr philosophers is odd, a mandatory 0.2 ms thinking is prescribed --
+// this will allow other hungry ph to get in the restaurant
 void	philo_process(t_prog *p, int id)
 {
 	t_philo	ph;
@@ -73,5 +79,7 @@ void	philo_process(t_prog *p, int id)
 		print_status(p, id, "is sleeping");
 		precise_sleep(p->t_sleep);
 		print_status(p, id, "is thinking");
+		if (p->n % 2 == 1)
+			usleep(200);
 	}
 }

@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 18:06:24 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/28 00:41:28 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/28 16:14:54 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,10 +25,10 @@ void	*watchdog(void *arg)
 	{
 		if (get_time() - ph->last_meal > ph->prog->t_die)
 		{
-			print_status(ph->prog, ph->id, "died");
+			print_death(ph->prog, ph->id);
 			exit(1);
 		}
-		usleep(1000);
+		usleep(200);
 	}
 	return (NULL);
 }

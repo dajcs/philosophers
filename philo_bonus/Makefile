@@ -6,13 +6,13 @@
 #    By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/07/27 18:23:38 by anemet            #+#    #+#              #
-#    Updated: 2025/07/27 18:23:42 by anemet           ###   ########.fr        #
+#    Updated: 2025/07/28 13:13:09 by anemet           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo_bonus
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -pthread -O2
+CFLAGS = -Wall -Wextra -Werror -pthread -g
 
 SRCS = main_bonus.c \
 		init_bonus.c \

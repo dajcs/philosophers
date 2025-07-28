@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 18:12:54 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/27 18:20:07 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/28 16:15:04 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,22 @@ void	print_status(t_prog *p, int id, char *status)
 	sem_wait(p->print);
 	t = get_time() - p->start_time;
 	printf("%lld %d %s\n", t, id, status);
+	fflush(stdout);
 	sem_post(p->print);
 }
 
-/* Sleep with sub-ms polling granularity to keep the deat timing tight */
+/* prints "died" message and keeps SEM_PRINT closed to keep it quiet */
+void	print_death(t_prog *p, int id)
+{
+	long long	t;
+
+	sem_wait(p->print);
+	t = get_time() - p->start_time;
+	printf("%lld %d died\n", t, id);
+	fflush(stdout);
+}
+
+/* Sleep with sub-ms polling granularity to keep the death timing tight */
 void	precise_sleep(long long ms)
 {
 	long long	start;
@@ -56,6 +68,6 @@ void	precise_sleep(long long ms)
 	{
 		if (get_time() - start >= ms)
 			break ;
-		usleep(200);
+		usleep(100);
 	}
 }

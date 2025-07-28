@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 17:25:39 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/27 17:45:27 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/28 11:23:31 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ void	close_unlink_sems(void)
 }
 
 /* Create named semaphores:
-   forks = N, print = 1, limit = N - 1 (classic waiter), meals = 0
+   forks = N, print = 1, limit = N / 2 ("strong" waiter), meals = 0
    Edge case: N==1 -> limit = 1, so the sole philosopher gets a fork */
 int	open_sems(t_prog *p)
 {
@@ -61,9 +61,9 @@ int	open_sems(t_prog *p)
 	close_unlink_sems();
 	p->forks = sem_open(SEM_FORKS, O_CREAT, 0644, p->n);
 	p->print = sem_open(SEM_PRINT, O_CREAT, 0644, 1);
-	lim = p->n - 1;
-	if (lim == 0)
-		lim++;
+	lim = p->n / 2;
+	if (lim < 1)
+		lim = 1;
 	p->limit = sem_open(SEM_LIMIT, O_CREAT, 0644, lim);
 	p->meals = sem_open(SEM_MEALS, O_CREAT, 0644, 0);
 	if (p->forks == SEM_FAILED || p->print == SEM_FAILED
