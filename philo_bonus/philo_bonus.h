@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 14:26:29 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/29 15:10:01 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/30 00:23:17 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ typedef struct s_prog
 	/* Named semaphores -- shared by all processes */
 	sem_t		*forks;
 	sem_t		*print;
-	sem_t		*limit;
+	sem_t		*limit; // limit to max N/2 the philos in the restaurant
 	sem_t		*meals;
 
 	pid_t		*pids; // child PIDs for mass-kill on termination
@@ -71,8 +71,11 @@ typedef struct s_philo
 	int			id; // philo id, 1..N
 	int			eat_count; // meals eaten so far
 	long long	last_meal; // timestamp start of last meal
+	char		sem_name[20]; // unique name for the philo's semaphore
+	int			done; // flag to signal the watchdog to exit;
 	t_prog		*prog; // back-pointer to shared program data
 	pthread_t	monitor; // watchdog thread (in the child process)
+	sem_t		*meal_lock; // to protect last meal
 }				t_philo;
 
 /* main_bonus.c */

@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 18:06:24 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/29 23:17:48 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/30 00:50:15 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,17 +19,23 @@
 void	*watchdog(void *arg)
 {
 	t_philo	*ph;
+	long long last_meal_time;
+	int is_done;
 
 	ph = (t_philo *)arg;
 	while (1)
 	{
-		if (get_time() - ph->last_meal >= ph->prog->t_die)
+		sem_wait(ph->meal_lock);
+		last_meal_time = ph->last_meal;
+		is_done = ph->done;
+		sem_post(ph->meal_lock);
+		if (is_done)
+			break;
+		if (get_time() - last_meal_time >= ph->prog->t_die)
 		{
 			print_death(ph->prog, ph->id);
-			sem_close(ph->prog->forks);
-			sem_close(ph->prog->print);
-			sem_close(ph->prog->limit);
-			sem_close(ph->prog->meals);
+			sem_close(ph->meal_lock);
+			sem_unlink(ph->sem_name);
 			exit(1);
 		}
 		usleep(200);

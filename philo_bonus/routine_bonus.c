@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 17:48:15 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/29 14:44:20 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/30 00:45:08 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,11 @@ static void	take_two_forks(t_philo *ph)
 static void	eat_block(t_philo *ph)
 {
 	take_two_forks(ph);
+	sem_wait(ph->meal_lock);
 	ph->last_meal = get_time();
+	sem_post(ph->meal_lock);
 	print_status(ph->prog, ph->id, "is eating");
-	ph->eat_count = ph->eat_count + 1;
+	ph->eat_count++;
 	precise_sleep(ph->prog->t_eat);
 	put_two_forks(ph);
 }
@@ -50,14 +52,27 @@ static int	check_meals_and_exit(t_philo *ph)
 		return (0);
 	if (ph->eat_count >= ph->prog->must_eat)
 	{
+		sem_wait(ph->meal_lock);
+		ph->done = 1;
+		sem_post(ph->meal_lock);
 		sem_post(ph->prog->meals);
-		sem_close(ph->prog->forks);
-		sem_close(ph->prog->print);
-		sem_close(ph->prog->limit);
-		sem_close(ph->prog->meals);
 		return (1);
 	}
 	return (0);
+}
+
+// builds a string like "/ph_lock_123" from a base and an id up to 999
+void build_sem_name(char *buf, const char *base, int id)
+{
+	char *p;
+
+	p = buf;
+	while (*base)
+		*p++ = *base++;
+	*p++ = (id / 100) + '0';
+	*p++ = ((id % 100) / 10) + '0';
+	*p++ = (id % 10) + '0';
+	*p = '\0';
 }
 
 // the main philo process
@@ -74,20 +89,29 @@ void	philo_process(t_prog *p, int id)
 	ph.id = id;
 	ph.eat_count = 0;
 	ph.prog = p;
+	ph.done = 0;
 	ph.last_meal = p->start_time;
+	build_sem_name(ph.sem_name, "/ph_lock_", id);
+	sem_unlink(ph.sem_name);
+	ph.meal_lock = sem_open(ph.sem_name, O_CREAT, 0644, 1);
+	if (ph.meal_lock == SEM_FAILED)
+		exit(1);
 	pthread_create(&ph.monitor, NULL, &watchdog, &ph);
-	pthread_detach(ph.monitor);
 	if (id % 2 == 0)
 		usleep(5000);
 	while (1)
 	{
 		eat_block(&ph);
 		if (check_meals_and_exit(&ph))
-			_exit(0);
+			break;
 		print_status(p, id, "is sleeping");
 		precise_sleep(p->t_sleep);
 		print_status(p, id, "is thinking");
 		if (p->n % 2 == 1)
 			usleep(200);
 	}
+	pthread_join(ph.monitor, NULL);
+	sem_close(ph.meal_lock);
+	sem_unlink(ph.sem_name);
+	exit(0);
 }
