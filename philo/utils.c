@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 14:32:33 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/27 13:12:58 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/28 17:12:42 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,6 @@ void	precise_sleep(long long ms, t_program *prog)
 	{
 		if (get_time() - start >= ms)
 			break ;
-		usleep(200);
+		usleep(100);
 	}
 }
