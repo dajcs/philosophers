@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 15:45:42 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/28 00:27:52 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/29 15:16:23 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,11 @@ void	kill_all(t_prog *p)
 	}
 }
 
-/* Wait for all children to finish (one way or another) and cleanup */
-static void	wait_for_any_and_cleanup(t_prog *p)
+/* Wait for all children to finish (when quota specified) and cleanup */
+// if a philo dies of hunger (exit (1)) => kill all philos alive
+// if a philo dies and eating quota was specified
+//
+static void	wait_for_any_and_cleanup(t_prog *p, pthread_t collector)
 {
 	int		i;
 	int		status;
@@ -54,14 +57,7 @@ static void	wait_for_any_and_cleanup(t_prog *p)
 		i++;
 	}
 	if (p->must_eat != -1 && died == 1)
-	{
-		i = 0;
-		while (i < p->n)
-		{
-			sem_post(p->meals);
-			i++;
-		}
-	}
+		pthread_cancel(collector);
 	close_unlink_sems();
 	free(p->pids);
 }
@@ -84,6 +80,8 @@ static void	*meals_collector(void *arg)
 }
 
 /* Fork N children; each child enters philo_process and never returns */
+// inside child (pid == 0)
+//     free(p->pids); p->pids = NULL because of valgrind
 int	spawn_all(t_prog *p)
 {
 	int		i;
@@ -97,8 +95,10 @@ int	spawn_all(t_prog *p)
 			return (1);
 		if (pid == 0)
 		{
+			free(p->pids);
+			p->pids = NULL;
 			philo_process(p, i + 1);
-			exit(0);
+			_exit(0);
 		}
 		p->pids[i] = pid;
 		i++;
@@ -125,7 +125,7 @@ main
  └─ wait_for_any_and_cleanup
       ├─ loop N×: waitpid(-1)
       ├─ (if any exit(1)) kill_all
-      ├─ (if quota && died) post N× to SEM_MEALS 
+      ├─ (if quota && died) cancel `meals_collector`
       └─ close_unlink_sems + free
 */
 int	main(int argc, char **argv)
@@ -133,6 +133,7 @@ int	main(int argc, char **argv)
 	t_prog		p;
 	pthread_t	collector;
 
+	collector = 0;
 	if (parse_args(&p, argc, argv) != 0)
 		return (printf("Usage: %s n t_die t_eat t_sleep [n_meals]\n", argv[0]),
 			1);
@@ -143,8 +144,10 @@ int	main(int argc, char **argv)
 		return (printf("Error: fork\n"), 1);
 	if (p.must_eat != -1)
 		pthread_create(&collector, NULL, &meals_collector, &p);
-	wait_for_any_and_cleanup(&p);
+	wait_for_any_and_cleanup(&p, collector);
 	if (p.must_eat != -1)
 		pthread_join(collector, NULL);
+	close_sems(&p);
+	close_unlink_sems();
 	return (0);
 }

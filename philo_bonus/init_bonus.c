@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 17:25:39 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/28 11:23:31 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/29 15:09:32 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,14 @@ int	parse_args(t_prog *p, int argc, char **argv)
 	else
 		p->must_eat = -1;
 	return (set_defaults(p));
+}
+
+void	close_sems(t_prog *p)
+{
+	sem_close(p->forks);
+	sem_close(p->print);
+	sem_close(p->limit);
+	sem_close(p->meals);
 }
 
 /* Remove any stale name semaphores from prior runs */

@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 14:26:29 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/28 14:42:46 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/29 15:10:01 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,6 +82,7 @@ int				spawn_all(t_prog *p);
 /* init_bonus.c */
 int				parse_args(t_prog *p, int argc, char **argv);
 int				open_sems(t_prog *p);
+void			close_sems(t_prog *p);
 void			close_unlink_sems(void);
 
 /* routine_bonus.c */

@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 17:48:15 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/28 16:43:23 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/29 14:44:20 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ static void	eat_block(t_philo *ph)
 }
 
 /* If must_eat is set and reached, notify parent (SEM_MEALS) and exit soon */
+// `sem_close` to make valgrind happy. This is closing the handle only
+// so the semaphor is available to other processes until a `sem_unlink`
 static int	check_meals_and_exit(t_philo *ph)
 {
 	if (ph->prog->must_eat == -1)
@@ -49,6 +51,10 @@ static int	check_meals_and_exit(t_philo *ph)
 	if (ph->eat_count >= ph->prog->must_eat)
 	{
 		sem_post(ph->prog->meals);
+		sem_close(ph->prog->forks);
+		sem_close(ph->prog->print);
+		sem_close(ph->prog->limit);
+		sem_close(ph->prog->meals);
 		return (1);
 	}
 	return (0);
@@ -57,6 +63,7 @@ static int	check_meals_and_exit(t_philo *ph)
 // the main philo process
 // set ph struct initial values
 // create watchdog detecting starvation to death
+// detach watchdog thread because of valgrind
 // every second philo should wait +5 ms to let the others grab 2 forks and eat
 // when nr philosophers is odd, a mandatory 0.2 ms thinking is prescribed --
 // this will allow other hungry ph to get in the restaurant
@@ -69,13 +76,14 @@ void	philo_process(t_prog *p, int id)
 	ph.prog = p;
 	ph.last_meal = p->start_time;
 	pthread_create(&ph.monitor, NULL, &watchdog, &ph);
+	pthread_detach(ph.monitor);
 	if (id % 2 == 0)
 		usleep(5000);
 	while (1)
 	{
 		eat_block(&ph);
 		if (check_meals_and_exit(&ph))
-			exit(0);
+			_exit(0);
 		print_status(p, id, "is sleeping");
 		precise_sleep(p->t_sleep);
 		print_status(p, id, "is thinking");
