@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 15:45:42 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/29 15:16:23 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/29 23:30:51 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void	kill_all(t_prog *p)
 // if a philo dies of hunger (exit (1)) => kill all philos alive
 // if a philo dies and eating quota was specified
 //
-static void	wait_for_any_and_cleanup(t_prog *p, pthread_t collector)
+static void	reap_children(t_prog *p, pthread_t collector)
 {
 	int		i;
 	int		status;
@@ -49,7 +49,7 @@ static void	wait_for_any_and_cleanup(t_prog *p, pthread_t collector)
 	while (i < p->n)
 	{
 		pid = waitpid(-1, &status, 0);
-		if (pid > 0 && WIFEXITED(status) && WEXITSTATUS(status) == 1)
+		if (pid > 0 && WIFEXITED(status) && WEXITSTATUS(status) == 1 && !died)
 		{
 			kill_all(p);
 			died = 1;
@@ -58,8 +58,6 @@ static void	wait_for_any_and_cleanup(t_prog *p, pthread_t collector)
 	}
 	if (p->must_eat != -1 && died == 1)
 		pthread_cancel(collector);
-	close_unlink_sems();
-	free(p->pids);
 }
 
 /* Collector waits until every philosopher posted once to SEM_MEALS */
@@ -75,6 +73,7 @@ static void	*meals_collector(void *arg)
 		sem_wait(p->meals);
 		i++;
 	}
+	sem_wait(p->print);
 	kill_all(p);
 	return (NULL);
 }
@@ -122,7 +121,7 @@ main
  │             └─ meals_collector
  │                 ├─ loop N×: sem_wait(SEM_MEALS)
  │                 └─ kill_all
- └─ wait_for_any_and_cleanup
+ └─ reap_children
       ├─ loop N×: waitpid(-1)
       ├─ (if any exit(1)) kill_all
       ├─ (if quota && died) cancel `meals_collector`
@@ -144,10 +143,11 @@ int	main(int argc, char **argv)
 		return (printf("Error: fork\n"), 1);
 	if (p.must_eat != -1)
 		pthread_create(&collector, NULL, &meals_collector, &p);
-	wait_for_any_and_cleanup(&p, collector);
+	reap_children(&p, collector);
 	if (p.must_eat != -1)
 		pthread_join(collector, NULL);
 	close_sems(&p);
+	free(p.pids);
 	close_unlink_sems();
 	return (0);
 }
