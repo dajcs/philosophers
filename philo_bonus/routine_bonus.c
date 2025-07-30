@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 17:48:15 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/30 00:45:08 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/30 17:03:34 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,20 +61,6 @@ static int	check_meals_and_exit(t_philo *ph)
 	return (0);
 }
 
-// builds a string like "/ph_lock_123" from a base and an id up to 999
-void build_sem_name(char *buf, const char *base, int id)
-{
-	char *p;
-
-	p = buf;
-	while (*base)
-		*p++ = *base++;
-	*p++ = (id / 100) + '0';
-	*p++ = ((id % 100) / 10) + '0';
-	*p++ = (id % 10) + '0';
-	*p = '\0';
-}
-
 // the main philo process
 // set ph struct initial values
 // create watchdog detecting starvation to death
@@ -86,15 +72,7 @@ void	philo_process(t_prog *p, int id)
 {
 	t_philo	ph;
 
-	ph.id = id;
-	ph.eat_count = 0;
-	ph.prog = p;
-	ph.done = 0;
-	ph.last_meal = p->start_time;
-	build_sem_name(ph.sem_name, "/ph_lock_", id);
-	sem_unlink(ph.sem_name);
-	ph.meal_lock = sem_open(ph.sem_name, O_CREAT, 0644, 1);
-	if (ph.meal_lock == SEM_FAILED)
+	if (!set_philo(&ph, p, id))
 		exit(1);
 	pthread_create(&ph.monitor, NULL, &watchdog, &ph);
 	if (id % 2 == 0)
@@ -103,7 +81,7 @@ void	philo_process(t_prog *p, int id)
 	{
 		eat_block(&ph);
 		if (check_meals_and_exit(&ph))
-			break;
+			break ;
 		print_status(p, id, "is sleeping");
 		precise_sleep(p->t_sleep);
 		print_status(p, id, "is thinking");

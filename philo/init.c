@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 12:15:20 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/27 13:11:38 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/30 14:42:15 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ static void	init_philos(t_program *prog)
 			prog->philos[i].right_fork = &prog->forks[prog->num_philos - 1];
 		else
 			prog->philos[i].right_fork = &prog->forks[i - 1];
+		pthread_mutex_init(&prog->philos[i].meal_lock, NULL);
 		i++;
 	}
 }
@@ -87,6 +88,7 @@ int	init_program(t_program *prog, int argc, char **argv)
 		return (1);
 	}
 	init_philos(prog);
+	pthread_mutex_init(&prog->stop_lock, NULL);
 	prog->stop_simulation = 0;
 	return (0);
 }

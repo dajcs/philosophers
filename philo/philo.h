@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 16:42:27 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/27 09:33:48 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/30 14:43:34 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ typedef struct s_philo
 	long long			last_meal_time; // timestamp of his last meal
 	// --- Thread resources link ---
 	pthread_t			thread; // the id for this philo's thread
+	pthread_mutex_t		meal_lock; // protecting eat_count and last_meal_time
 	pthread_mutex_t		*left_fork; // pointer to the fork on the left
 	pthread_mutex_t		*right_fork; // pointer to the fork on the right
 	struct s_program	*prog; // a pointer back to the shared dashboard
@@ -50,6 +51,7 @@ typedef struct s_program
 	// --- Simulation State & control (Shared and Modified) ---
 	int					stop_simulation; // a flag to tell all threads to stop
 	// --- Shared Tools (Mutexes) ---
+	pthread_mutex_t		stop_lock; // lock for stop_simulation
 	pthread_mutex_t		write_lock; // lock for printing to the console
 	// --- Pointers to Dynamic Data ---
 	t_philo				*philos; // an array of all philosophers
@@ -63,6 +65,8 @@ int						init_program(t_program *prog, int argc, char **argv);
 void					*philosopher_routine(void *argv);
 
 /* monitor.c */
+int						get_stop(t_program *p);
+void					set_stop(t_program *p, int v);
 void					*monitor_routine(void *arg);
 
 /* utils.c */

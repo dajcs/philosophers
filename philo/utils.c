@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/25 14:32:33 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/28 17:12:42 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/30 14:26:54 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	print_status(t_philo *philo, char *status)
 	long long	time;
 
 	pthread_mutex_lock(&philo->prog->write_lock);
-	if (!philo->prog->stop_simulation || strcmp(status, "died") == 0)
+	if (!get_stop(philo->prog) || strcmp(status, "died") == 0)
 	{
 		time = get_time() - philo->prog->start_time;
 		printf("%lld %d %s\n", time, philo->id, status);
@@ -53,7 +53,7 @@ void	precise_sleep(long long ms, t_program *prog)
 	long long	start;
 
 	start = get_time();
-	while (!prog->stop_simulation)
+	while (!get_stop(prog))
 	{
 		if (get_time() - start >= ms)
 			break ;

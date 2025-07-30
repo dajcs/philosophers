@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 14:26:29 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/30 00:23:17 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/30 16:44:14 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ void			philo_process(t_prog *p, int id);
 
 /* monitor_bonus.c */
 void			*watchdog(void *arg);
+int				set_philo(t_philo *ph, t_prog *p, int id);
 
 /* utils_bonus.c */
 long long		get_time(void);
