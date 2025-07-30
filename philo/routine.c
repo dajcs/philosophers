@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 13:53:27 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/30 15:27:58 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/31 01:09:06 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,11 +45,13 @@ static void	philo_eat(t_philo *philo)
 	pthread_mutex_lock(&philo->meal_lock);
 	philo->last_meal_time = get_time();
 	print_status(philo, "is eating");
-	philo->eat_count++;
 	pthread_mutex_unlock(&philo->meal_lock);
 	precise_sleep(philo->prog->time_to_eat, philo->prog);
 	pthread_mutex_unlock(philo->left_fork);
 	pthread_mutex_unlock(philo->right_fork);
+	pthread_mutex_lock(&philo->meal_lock);
+	philo->eat_count++;
+	pthread_mutex_unlock(&philo->meal_lock);
 }
 
 void	*philosopher_routine(void *arg)

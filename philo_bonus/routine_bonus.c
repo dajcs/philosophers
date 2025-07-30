@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 17:48:15 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/30 17:03:34 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/31 01:20:43 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,9 +38,9 @@ static void	eat_block(t_philo *ph)
 	ph->last_meal = get_time();
 	sem_post(ph->meal_lock);
 	print_status(ph->prog, ph->id, "is eating");
-	ph->eat_count++;
 	precise_sleep(ph->prog->t_eat);
 	put_two_forks(ph);
+	ph->eat_count++;
 }
 
 /* If must_eat is set and reached, notify parent (SEM_MEALS) and exit soon */
@@ -64,7 +64,6 @@ static int	check_meals_and_exit(t_philo *ph)
 // the main philo process
 // set ph struct initial values
 // create watchdog detecting starvation to death
-// detach watchdog thread because of valgrind
 // every second philo should wait +5 ms to let the others grab 2 forks and eat
 // when nr philosophers is odd, a mandatory 0.2 ms thinking is prescribed --
 // this will allow other hungry ph to get in the restaurant
