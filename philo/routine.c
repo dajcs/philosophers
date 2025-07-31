@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/24 13:53:27 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/31 01:09:06 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/31 09:41:23 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,27 @@ static void	philo_eat(t_philo *philo)
 	pthread_mutex_unlock(&philo->meal_lock);
 }
 
+/*
+1. philosopher_routine (one thread per philosopher)
+ └─ (loop while !get_stop)
+     ├─ philo_eat
+     │   ├─ lock_forks
+     │   │   ├─ pthread_mutex_lock
+     │   │   └─ print_status
+     │   ├─ pthread_mutex_lock (meal_lock)
+     │   ├─ get_time
+     │   ├─ print_status ("is eating")
+     │   ├─ pthread_mutex_unlock (meal_lock)
+     │   ├─ precise_sleep
+     │   ├─ pthread_mutex_lock (meal_lock, for eat_count)
+     │   ├─ pthread_mutex_unlock (meal_lock, for eat_count)
+     │   └─ pthread_mutex_unlock (forks)
+     ├─ print_status ("is sleeping")
+     ├─ precise_sleep
+     │   ├─ get_time
+     │   └─ get_stop
+     └─ print_status ("is thinking")
+*/
 void	*philosopher_routine(void *arg)
 {
 	t_philo	*philo;

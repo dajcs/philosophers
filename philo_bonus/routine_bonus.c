@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 17:48:15 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/31 01:20:43 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/31 09:52:05 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,37 @@ static int	check_meals_and_exit(t_philo *ph)
 // every second philo should wait +5 ms to let the others grab 2 forks and eat
 // when nr philosophers is odd, a mandatory 0.2 ms thinking is prescribed --
 // this will allow other hungry ph to get in the restaurant
+/*
+1. philo_process (Child Process)
+ │
+ ├─ set_philo
+ │   ├─ build_sem_name
+ │   ├─ sem_unlink
+ │   └─ sem_open (for meal_lock)
+ │
+ ├─ pthread_create -> watchdog (thread inside child process)
+ │
+ └─ (main loop)
+     ├─ eat_block
+     │   ├─ take_two_forks
+     │   │   ├─ sem_wait (limit)
+     │   │   ├─ sem_wait (forks)
+     │   │   └─ print_status
+     │   ├─ sem_wait (meal_lock)
+     │   ├─ get_time
+     │   ├─ sem_post (meal_lock)
+     │   ├─ print_status ("is eating")
+     │   ├─ precise_sleep
+     │   └─ put_two_forks
+     │       └─ sem_post (forks, limit)
+     │
+     ├─ check_meals_and_exit
+     │   └─ sem_post (meals, if quota reached) -> Notifies parent's collector
+     │
+     ├─ print_status ("is sleeping")
+     ├─ precise_sleep
+     └─ print_status ("is thinking")
+*/
 void	philo_process(t_prog *p, int id)
 {
 	t_philo	ph;

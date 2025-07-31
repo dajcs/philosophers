@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/23 17:13:22 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/27 13:12:07 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/31 10:03:26 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,6 +89,24 @@ static int	start_simulation(t_program *prog)
 	return (0);
 }
 
+/* *******************  Function Call Map (Mandatory)  *******************
+main
+ ├─ init_program
+ │   ├─ parse_args
+ │   │   └─ ft_atoi
+ │   ├─ init_mutexes
+ │   │   └─ pthread_mutex_init
+ │   ├─ init_philos
+ │   │   └─ pthread_mutex_init
+ │   └─ pthread_mutex_init
+ ├─ start_simulation
+ │   ├─ get_time
+ │   ├─ pthread_create (loop for each philosopher) -> philosopher_routine
+ │   ├─ pthread_create (for the monitor) -> monitor_routine
+ │   └─ pthread_join (wait for all threads)
+ └─ destroy_all
+     └─ pthread_mutex_destroy
+*/
 int	main(int argc, char **argv)
 {
 	t_program	prog;

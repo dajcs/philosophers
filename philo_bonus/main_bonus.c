@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 15:45:42 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/29 23:30:51 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/31 10:00:43 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,14 @@ static void	reap_children(t_prog *p, pthread_t collector)
 }
 
 /* Collector waits until every philosopher posted once to SEM_MEALS */
+/*
+3. meals_collector (Thread inside Parent Process, if quota)
+ └─ (loop N times)
+     ├─ sem_wait (meals)
+     └─ if (all have eaten)
+         ├─ sem_wait (print)
+         └─ kill_all
+             └─ kill*/
 static void	*meals_collector(void *arg)
 {
 	t_prog	*p;
@@ -106,26 +114,27 @@ int	spawn_all(t_prog *p)
 }
 
 /* *******************    Function Call Map   ******************************
-main
+main (Parent Process)
  ├─ parse_args
+ │   └─ ft_atoi
  ├─ open_sems
+ │   ├─ close_unlink_sems
+ │   │   └─ sem_unlink
+ │   └─ sem_open
+ ├─ get_time
  ├─ spawn_all
- │    └─ fork -> child: philo_process
- │                     ├─ pthread_create (watchdog)
- │                     ├─ eat_block
- │                     │    ├─ take_two_forks
- │                     │    └─ put_two_forks
- │                     ├─ (if quota) sem_post(SEM_MEALS) + exit(0)
- │                     └─ (loop)
- ├─ (if quota) pthread_create (meals_collector)
- │             └─ meals_collector
- │                 ├─ loop N×: sem_wait(SEM_MEALS)
- │                 └─ kill_all
- └─ reap_children
-      ├─ loop N×: waitpid(-1)
-      ├─ (if any exit(1)) kill_all
-      ├─ (if quota && died) cancel `meals_collector`
-      └─ close_unlink_sems + free
+ │   └─ fork (for each philosopher) -> Creates a child `philo_process`
+ ├─ pthread_create (if quota) -> meals_collector (thread in parent)
+ ├─ reap_children
+ │   ├─ waitpid (loops for all children)
+ │   └─ kill_all (if a child exits with status 1)
+ │       └─ kill
+ └─ Cleanup
+     ├─ pthread_join (for meals_collector)
+     ├─ close_sems
+     │   └─ sem_close
+     └─ close_unlink_sems
+         └─ sem_unlink
 */
 int	main(int argc, char **argv)
 {

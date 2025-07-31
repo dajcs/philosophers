@@ -6,7 +6,7 @@
 /*   By: anemet <anemet@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/27 18:06:24 by anemet            #+#    #+#             */
-/*   Updated: 2025/07/30 17:08:36 by anemet           ###   ########.fr       */
+/*   Updated: 2025/07/31 10:02:14 by anemet           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,16 @@
    Each child keeps a local last_meal timestamp updated at the moment it starts
    eating. The watchdog polls and exits the philo *process* with code 1 when
    philo is starved to death. Parent detects the exit(1) and kills the rest. */
+/*
+2. watchdog (Thread inside each philo_process)
+ └─ (loop while !done)
+     ├─ sem_wait (meal_lock)
+     ├─ sem_post (meal_lock)
+     ├─ get_time
+     └─ if (starved)
+         ├─ print_death
+         └─ exit(1) -> Signals parent via reap_children
+*/
 void	*watchdog(void *arg)
 {
 	t_philo		*ph;
